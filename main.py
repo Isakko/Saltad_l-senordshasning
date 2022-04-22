@@ -6,6 +6,7 @@
 # Imports
 import os
 from os.path import exists
+from time import localtime, strftime
 
 # Class where you create new accounts
 class Accounts:
@@ -60,16 +61,22 @@ def create_account():
                     else:
                         with open("account"+str(quantity)+".txt", "a", encoding="utf8") as all_accounts:
                                 all_accounts.write(acc.save_account())
+                        new_user_log()
                         break
-                    
-            
                         
             elif choice.capitalize() == "Nej":
                 print("Återvänder till huvudmenyn...")
                 break
 
+def new_user_log():
+    with open("log.txt", "a", encoding="utf8") as the_log:
+        the_log.write(str(strftime("New user created! (%a, %d %b %Y %H:%M:%S)", localtime())))
+        the_log.write(str("\n"))
+        
 # Main
 def main():
+
+    
 
     clear_console()
 

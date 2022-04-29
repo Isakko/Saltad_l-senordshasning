@@ -93,11 +93,10 @@ def login_account():
             if file_exists:
                 with open("account"+str(quantity)+".txt", "r", encoding="utf8") as searchfile:
                     lines = searchfile.readlines()
-                    lines[0].rstrip("\n")
-                    if acc.save_account() == lines:
-                    #acc.username == lines[0].rstrip("\n") and acc.password == lines[1]: 
+                    if acc.username == lines[0].rstrip("\n") and acc.password == lines[1]: 
                         print("\nInloggning lyckades!")
                         logged_in = True
+                        change_pass(acc)
                     else:
                         quantity+=1
                 if logged_in: break
@@ -107,10 +106,53 @@ def login_account():
                 break
         break
 
-# Main
-def main():
+def change_pass(acc:Accounts):
 
     
+
+    #clear_console()
+    choice = input("Vid byte av lösenord, ange 'passwd'.\n")
+        
+    while True:
+
+        if choice == "passwd":
+            
+            old_pass = input("Ange gamla lösenordet: ")
+            if old_pass == acc.password:
+                
+                quantity = 1
+
+                new_pass = input("Ange nya lösenord: ")
+                
+                while True:
+                
+                    file_exists = exists("account"+str(quantity)+".txt")
+                    logged_in = False
+                    if file_exists:
+                        with open("account"+str(quantity)+".txt", "r", encoding="utf8") as searchfile:
+                            lines = searchfile.readlines()
+                            if acc.password == lines[1]: 
+                                with open("account"+str(quantity)+".txt", "w", encoding="utf8") as searchfile:
+                                    lines = searchfile.write()
+                                    lines[1] = new_pass
+
+                                
+                                logged_in = True
+
+                            else:
+                                quantity+=1
+                    if logged_in: break
+
+            else:
+                print("Inget konto matchade dina kontouppgifter....")
+                break
+            
+        else:
+            print("Inloggning misslyckades, fel lösenord.")
+            break
+
+# Main
+def main():
 
     clear_console()
 

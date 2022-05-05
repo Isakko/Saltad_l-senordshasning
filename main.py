@@ -42,14 +42,10 @@ def create_account():
     quantity = 1
     while True:
 
-            choice = input("Vill du skapa ett konto? [Ja] eller [Nej]: ")
-            clear_console()
-
-            if choice.capitalize() == "Ja":
+            acc = Accounts(input("Input username: "), input("Input password (Atleast one capital letter, one number and 6 letters long!): "))
+            
+            if acc.password.islower() == False and len(acc.password) > 6 and has_numbers(acc) == True:
                 
-                acc = Accounts(input("Input username: "), input("Input password: "))
-
-                clear_console()
                 print(f"\n{acc}\n")
                 
                 while True:
@@ -60,19 +56,37 @@ def create_account():
                         quantity+=1
 
                     else:
+                        acc.password = crypted_pass(acc)
                         with open("account"+str(quantity)+".txt", "a", encoding="utf8") as all_accounts:
                                 all_accounts.write(acc.save_account())
                         new_user_log()
+
                         break
-                        
-            elif choice.capitalize() == "Nej":
-                print("Återvänder till huvudmenyn...")
+                            
+                print("Returning to main menu...")
                 break
 
-# Function that logs new users in "log.txt"
+            else:
+                print("Password does not meet the requirements...")
+
+# Function that checks if pass contain any number
+def has_numbers(acc:Accounts):
+    return any(char.isdigit() for char in acc.password)
+
+# Function down below log diffirent changes in "log.txt" text file.
 def new_user_log():
     with open("log.txt", "a", encoding="utf8") as the_log:
         the_log.write(str(strftime("New user created! (%a, %d %b %Y %H:%M:%S)", localtime())))
+        the_log.write(str("\n"))
+
+def pass_change_log():
+    with open("log.txt", "a", encoding="utf8") as the_log:
+        the_log.write(str(strftime("Account password changes! (%a, %d %b %Y %H:%M:%S)", localtime())))
+        the_log.write(str("\n"))
+
+def login_acc_log():
+    with open("log.txt", "a", encoding="utf8") as the_log:
+        the_log.write(str(strftime("User login attempt or success! (%a, %d %b %Y %H:%M:%S)", localtime())))
         the_log.write(str("\n"))
 
 # Function that allows you to log in on account
@@ -83,9 +97,9 @@ def login_account():
     quantity = 1
     while True:
 
-        print("Logga in nedan:\n")
+        print("Login below:\n")
         acc = Accounts(input("Input username: "), input("Input password: "))
-        
+        acc.password = decrypt_pass(acc)
         while True:
                 
             file_exists = exists("account"+str(quantity)+".txt")
@@ -94,7 +108,9 @@ def login_account():
                 with open("account"+str(quantity)+".txt", "r", encoding="utf8") as searchfile:
                     lines = searchfile.readlines()
                     if acc.username == lines[0].rstrip("\n") and acc.password == lines[1]: 
-                        print("\nInloggning lyckades!")
+                        clear_console()
+                        print("\nLogin successful!")
+                        login_acc_log()
                         logged_in = True
                         change_pass(acc)
                     else:
@@ -102,27 +118,91 @@ def login_account():
                 if logged_in: break
 
             else:
-                print("Inget konto matchade dina kontouppgifter....")
+                print("\nUser authorization failure....")
+                login_acc_log()
                 break
         break
 
+def crypted_pass(acc:Accounts):
+    
+    letters = "ABCDEFGHIJKLMNOPQRSTUVXYZÅÄÖ"
+    shifted_numbers = "=!'#¤%&/()"
+    
+    encrypted = ""
+
+    for i in range(len(acc.password)):
+
+        if acc.password[i].isupper():
+            where = letters.index(acc.password[i])
+            
+            encrypted += acc.password[i].replace(acc.password[i], letters[where+1].lower())
+
+        elif acc.password[i].islower():
+            where = letters.index(acc.password[i].upper())
+
+            encrypted += acc.password[i].replace(acc.password[i], letters[where+1].upper())
+        
+        elif has_numbers(acc) == True:
+            encrypted+= acc.password[i].replace(acc.password[i], shifted_numbers[int(acc.password[i])])
+
+        else:
+            encrypted += acc.password[i] 
+    
+    print(encrypted)
+    acc.password = encrypted
+    return acc.password
+
+def decrypt_pass(acc:Accounts):
+    
+    letters = "ABCDEFGHIJKLMNOPQRSTUVXYZÅÄÖ"
+    shifted_numbers = "=!'#¤%&/()"
+    numbers = "0123456789"
+    
+    encrypted = ""
+
+    for i in range(len(acc.password)):
+
+        if acc.password[i].isupper():
+            where = letters.index(acc.password[i])
+            
+            encrypted += acc.password[i].replace(acc.password[i], letters[where-1].lower())
+
+        elif acc.password[i].islower():
+            where = letters.index(acc.password[i].upper())
+
+            encrypted += acc.password[i].replace(acc.password[i], letters[where-1].upper())
+        
+        elif has_numbers(acc) == True:
+            encrypted+= acc.password[i].replace(acc.password[i], numbers[int(acc.password[i])])
+
+        else:
+            encrypted += acc.password[i] 
+    
+    print(encrypted)
+    acc.password = encrypted
+    return acc.password
+
+def has_numbers(acc: Accounts):
+    return any(char.isdigit() for char in acc.password)
+
+# Function that changes password on logged in accountt
 def change_pass(acc:Accounts):
 
-    
-
-    #clear_console()
-    choice = input("Vid byte av lösenord, ange 'passwd'.\n")
+    choice = input("\nInput 'passwd' to change password or 'meny' to return to the menu: ")
         
     while True:
 
         if choice == "passwd":
+            clear_console()
+            print("Welcome to the password program!\n")
+
+            old_pass = input("Input old password: ")
             
-            old_pass = input("Ange gamla lösenordet: ")
             if old_pass == acc.password:
                 
                 quantity = 1
 
-                new_pass = input("Ange nya lösenord: ")
+                new_pass = input("Input new password: ")
                 
                 while True:
                 
@@ -133,9 +213,12 @@ def change_pass(acc:Accounts):
                             lines = searchfile.readlines()
                             if acc.password == lines[1]: 
                                 with open("account"+str(quantity)+".txt", "w", encoding="utf8") as searchfile:
-                                    lines = searchfile.write()
-                                    lines[1] = new_pass
-
+                                    acc.password = new_pass
+                                    new_pass = crypted_pass(acc)
+                                    searchfile.write(acc.save_account())
+                                    clear_console()
+                                    print("\nPassword changed!")
+                                    pass_change_log()
                                 
                                 logged_in = True
 
@@ -143,12 +226,18 @@ def change_pass(acc:Accounts):
                                 quantity+=1
                     if logged_in: break
 
-            else:
-                print("Inget konto matchade dina kontouppgifter....")
                 break
-            
+
+            else:
+                print("User authorization failure...")
+                break
+
+        elif choice == "meny":
+            clear_console()
+            break
+
         else:
-            print("Inloggning misslyckades, fel lösenord.")
+            print("User authorization failure")
             break
 
 # Main
@@ -158,20 +247,20 @@ def main():
 
     while True:
 
-        print("""\nVälkommen till kontosidan!\n
-    1. Skapa nytt konto
-    2. Logga in på konto
-    3. Avsluta programmet
+        print("""\nWelcome to the menu!\n
+    1. Create new account
+    2. Login on existing account
+    3. Quit program
                 """)
 
-        main_choice = input("Skriv in siffra för ditt val: ")
+        main_choice = input("Input number for your choice: ")
         if main_choice == str(1):
             create_account()
         elif main_choice == str(2):
             login_account()
         elif main_choice == str(3):
             clear_console()
-            print("Programmet avslutas...")
+            print("\nQuitting program...\n")
             break 
 
 if __name__ == "__main__":

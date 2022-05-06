@@ -6,6 +6,7 @@
 # Imports
 import os
 from os.path import exists
+from re import I
 from time import localtime, strftime
 
 # Class where you create new accounts
@@ -44,7 +45,7 @@ def create_account():
 
             acc = Accounts(input("Input username: "), input("Input password (Atleast one capital letter, one number and 6 letters long!): "))
             
-            if acc.password.islower() == False and len(acc.password) > 6 and has_numbers(acc) == True:
+            if acc.password.islower() == False and len(acc.password) >= 6 and has_numbers(acc) == True:
                 
                 print(f"\n{acc}\n")
                 
@@ -99,7 +100,8 @@ def login_account():
 
         print("Login below:\n")
         acc = Accounts(input("Input username: "), input("Input password: "))
-        acc.password = decrypt_pass(acc)
+        acc.password = crypted_pass(acc)
+        print(acc.password)
         while True:
                 
             file_exists = exists("account"+str(quantity)+".txt")
@@ -131,7 +133,7 @@ def crypted_pass(acc:Accounts):
     encrypted = ""
 
     for i in range(len(acc.password)):
-
+        
         if acc.password[i].isupper():
             where = letters.index(acc.password[i])
             
@@ -143,19 +145,23 @@ def crypted_pass(acc:Accounts):
             encrypted += acc.password[i].replace(acc.password[i], letters[where+1].upper())
         
         elif has_numbers(acc) == True:
-            encrypted+= acc.password[i].replace(acc.password[i], shifted_numbers[int(acc.password[i])])
+            x = acc.password[i]
+            if x == 9:
+                encrypted+= acc.password[i].replace(acc.password[i], shifted_numbers[int(acc.password[x-1])])
+            else:
+                encrypted+= acc.password[i].replace(acc.password[i], shifted_numbers[int(acc.password[i])])
 
         else:
             encrypted += acc.password[i] 
     
-    print(encrypted)
+    #print(encrypted)
     acc.password = encrypted
     return acc.password
 
 def decrypt_pass(acc:Accounts):
     
     letters = "ABCDEFGHIJKLMNOPQRSTUVXYZÅÄÖ"
-    shifted_numbers = "=!'#¤%&/()"
+    #shifted_numbers = "=!'#¤%&/()"
     numbers = "0123456789"
     
     encrypted = ""
@@ -165,12 +171,12 @@ def decrypt_pass(acc:Accounts):
         if acc.password[i].isupper():
             where = letters.index(acc.password[i])
             
-            encrypted += acc.password[i].replace(acc.password[i], letters[where-1].lower())
+            encrypted += acc.password[i].replace(acc.password[i], letters[where].upper())
 
         elif acc.password[i].islower():
             where = letters.index(acc.password[i].upper())
 
-            encrypted += acc.password[i].replace(acc.password[i], letters[where-1].upper())
+            encrypted += acc.password[i].replace(acc.password[i], letters[where].lower())
         
         elif has_numbers(acc) == True:
             encrypted+= acc.password[i].replace(acc.password[i], numbers[int(acc.password[i])])
@@ -178,9 +184,8 @@ def decrypt_pass(acc:Accounts):
         else:
             encrypted += acc.password[i] 
     
-    print(encrypted)
     acc.password = encrypted
-    return acc.password
+    #return acc.password
 
 def has_numbers(acc: Accounts):
     return any(char.isdigit() for char in acc.password)
@@ -197,24 +202,28 @@ def change_pass(acc:Accounts):
             print("Welcome to the password program!\n")
 
             old_pass = input("Input old password: ")
-            
+            old_pass = crypted_pass(acc)
             if old_pass == acc.password:
                 
                 quantity = 1
 
                 new_pass = input("Input new password: ")
-                
+                print("1")
                 while True:
                 
                     file_exists = exists("account"+str(quantity)+".txt")
                     logged_in = False
+                    print("2")
                     if file_exists:
                         with open("account"+str(quantity)+".txt", "r", encoding="utf8") as searchfile:
                             lines = searchfile.readlines()
-                            if acc.password == lines[1]: 
+                            print("3")
+                            if crypted_pass(acc) == lines[1]: 
                                 with open("account"+str(quantity)+".txt", "w", encoding="utf8") as searchfile:
-                                    acc.password = new_pass
+                                    print("4")
                                     new_pass = crypted_pass(acc)
+                                    print(new_pass)
+                                    acc.password = new_pass
                                     searchfile.write(acc.save_account())
                                     clear_console()
                                     print("\nPassword changed!")
@@ -237,7 +246,7 @@ def change_pass(acc:Accounts):
             break
 
         else:
-            print("User authorization failure")
+            print("\nError")
             break
 
 # Main

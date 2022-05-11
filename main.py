@@ -161,34 +161,38 @@ def crypted_pass(acc:Accounts):
 def decrypt_pass(acc:Accounts):
     
     letters = "ABCDEFGHIJKLMNOPQRSTUVXYZÅÄÖ"
-    #shifted_numbers = "=!'#¤%&/()"
+    shifted_numbers = "=!'#¤%&/()"
     numbers = "0123456789"
     
     encrypted = ""
-
+    
     for i in range(len(acc.password)):
 
         if acc.password[i].isupper():
             where = letters.index(acc.password[i])
             
-            encrypted += acc.password[i].replace(acc.password[i], letters[where].upper())
+            encrypted += acc.password[i].replace(acc.password[i], letters[where-1].lower())
 
         elif acc.password[i].islower():
             where = letters.index(acc.password[i].upper())
 
-            encrypted += acc.password[i].replace(acc.password[i], letters[where].lower())
+            encrypted += acc.password[i].replace(acc.password[i], letters[where-1].upper())
+         
+        elif acc.password[i] in shifted_numbers: 
+            x = shifted_numbers.index(acc.password[i])
+            
+            encrypted+= acc.password[i].replace(acc.password[i], numbers[x])
         
-        elif has_numbers(acc) == True:
-            encrypted+= acc.password[i].replace(acc.password[i], numbers[int(acc.password[i])])
-
+        
         else:
             encrypted += acc.password[i] 
     
     acc.password = encrypted
-    #return acc.password
+    
+    return acc.password
 
-def has_numbers(acc: Accounts):
-    return any(char.isdigit() for char in acc.password)
+def has_numbers_new(new_pass):
+    return any(char.isdigit() for char in new_pass)
 
 # Function that changes password on logged in accountt
 def change_pass(acc:Accounts):
@@ -202,39 +206,42 @@ def change_pass(acc:Accounts):
             print("Welcome to the password program!\n")
 
             old_pass = input("Input old password: ")
-            old_pass = crypted_pass(acc)
+            decrypt_pass(acc)
             if old_pass == acc.password:
                 
                 quantity = 1
 
-                new_pass = input("Input new password: ")
-                print("1")
-                while True:
-                
-                    file_exists = exists("account"+str(quantity)+".txt")
-                    logged_in = False
-                    print("2")
-                    if file_exists:
-                        with open("account"+str(quantity)+".txt", "r", encoding="utf8") as searchfile:
-                            lines = searchfile.readlines()
-                            print("3")
-                            if crypted_pass(acc) == lines[1]: 
-                                with open("account"+str(quantity)+".txt", "w", encoding="utf8") as searchfile:
-                                    print("4")
-                                    new_pass = crypted_pass(acc)
-                                    print(new_pass)
-                                    acc.password = new_pass
-                                    searchfile.write(acc.save_account())
-                                    clear_console()
-                                    print("\nPassword changed!")
-                                    pass_change_log()
-                                
-                                logged_in = True
+                new_pass = input("Input password (Atleast one capital letter, one number and 6 letters long!): ")
+                if new_pass.islower() == False and len(new_pass) >= 6 and has_numbers_new(new_pass) == True:
+                    print("1")
+                    while True:
+                    
+                        file_exists = exists("account"+str(quantity)+".txt")
+                        logged_in = False
+                        
+                        if file_exists:
+                            with open("account"+str(quantity)+".txt", "r", encoding="utf8") as searchfile:
+                                lines = searchfile.readlines()
+                                print("3")
+                                print(acc.password)
+                                if crypted_pass(acc) == lines[1]: 
+                                    with open("account"+str(quantity)+".txt", "w", encoding="utf8") as searchfile:
+                                        print("4")
+                                        acc.password = new_pass
+                                        crypted_pass(acc)
+                                        
+                                        searchfile.write(acc.save_account())
+                                        clear_console()
+                                        print("\nPassword changed!")
+                                        pass_change_log()
+                                    
+                                    logged_in = True
 
-                            else:
-                                quantity+=1
-                    if logged_in: break
-
+                                else:
+                                    quantity+=1
+                        if logged_in: break
+                else:
+                    print("Password does not meet the requirements...")
                 break
 
             else:

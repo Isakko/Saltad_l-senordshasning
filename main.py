@@ -189,8 +189,7 @@ def decrypt_pass(acc:Accounts):
             x = shifted_numbers.index(acc.password[i])
             
             encrypted+= acc.password[i].replace(acc.password[i], numbers[x])
-        
-        
+         
         else:
             encrypted += acc.password[i] 
     
@@ -217,11 +216,11 @@ def change_pass(acc:Accounts):
             old_pass = input("Input old password: ")
             decrypt_pass(acc)
             if old_pass == acc.password:
-        
+                crypted_pass(acc)
                 new_pass = input("Input password (Atleast one capital letter, one number and 6 letters long!): ")
                 
-                if new_pass.islower() == False and len(new_pass) >= 6 and has_numbers_new(new_pass) == True:
-                    logged_in = False
+                if not new_pass.islower() and len(new_pass) >= 6 and has_numbers_new(new_pass):
+                   
                     while True:
                     
                         file_exists = exists("account"+str(quantity)+".txt")
@@ -229,24 +228,18 @@ def change_pass(acc:Accounts):
                         if file_exists:
                             with open("account"+str(quantity)+".txt", "r", encoding="utf8") as searchfile:
                                 lines = searchfile.readlines()
-                                print("3")
-                                print(lines)
-                                if crypted_pass(acc) == lines[1]: 
+                                if acc.password == lines[1]: 
                                     with open("account"+str(quantity)+".txt", "w", encoding="utf8") as searchfile:
                                         print("4")
                                         acc.password = new_pass
                                         crypted_pass(acc)
                                         
                                         searchfile.write(acc.save_account())
-                                        #clear_console()
+                                        clear_console()
                                         print("\nPassword changed!")
                                         pass_change_log()
-                                    
-                                        logged_in = True
-
-                                elif logged_in == True: 
-                                    break
-
+                                        break
+                                
                                 else:
                                   quantity+=1
 

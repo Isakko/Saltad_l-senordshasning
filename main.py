@@ -8,7 +8,6 @@ import os
 from os.path import exists
 from time import localtime, strftime
 
-# Class where you create new accounts
 class Accounts:
 
     def __init__(self, username, password):
@@ -22,21 +21,33 @@ class Accounts:
         return self.password
 
     def __str__(self):
+        """String of attributes
+
+        Returns:
+            str, str: Username: 'Username', Password: 'Password'
+        """
+
         return f"Username: {self.username}\nPassword: {self.password}"
 
     def save_account(self):
+        """Use to save to file
+
+        Returns:
+            str, str: Username, Password
+        """
+
         return f"{self.username}\n{self.password}"
 
-# Function that clears console
 def clear_console():
+
     command = 'clear'
     if os.name in ('nt', 'dos'):
         command = 'cls'
     os.system(command)
 
-# Function that creates a new account
 def create_account():
-    
+    """Creates account with username and password, stores it in a separate .txt file
+    """
     clear_console()
     quantity = 1
     while True:
@@ -68,11 +79,9 @@ def create_account():
             else:
                 print("Password does not meet the requirements...")
 
-# Function that checks if pass contain any number
 def has_numbers(acc:Accounts):
     return any(char.isdigit() for char in acc.password)
 
-# Function down below log diffirent changes in "log.txt" text file.
 def new_user_log():
     with open("log.txt", "a", encoding="utf8") as the_log:
         the_log.write(str(strftime("New user created! (%a, %d %b %Y %H:%M:%S)", localtime())))
@@ -88,9 +97,9 @@ def login_acc_log():
         the_log.write(str(strftime("User login attempt or success! (%a, %d %b %Y %H:%M:%S)", localtime())))
         the_log.write(str("\n"))
 
-# Function that allows you to log in on account
 def login_account():
-    
+    """Logins on existing account looping through .txt files
+    """
     clear_console()
 
     quantity = 1
@@ -123,9 +132,16 @@ def login_account():
                 break
         break
 
-# Function that encrypt passwords
 def crypted_pass(acc:Accounts):
-    
+    """Takes in password and encrypts it.
+
+    Args:
+        acc (Accounts): password
+
+    Returns:
+        str: crypted passwordd
+    """
+
     letters = "ABCDEFGHIJKLMNOPQRSTUVXYZÅÄÖ"
     shifted_numbers = "=!'#¤%&/()"
     
@@ -164,9 +180,15 @@ def crypted_pass(acc:Accounts):
     acc.password = encrypted
     return acc.password
 
-# Function that decypts password
 def decrypt_pass(acc:Accounts):
-    
+    """Takes in crypted password and decrypts it.
+
+    Args:
+        acc (Accounts): crypted password
+
+    Returns:
+        str: decrypted password
+    """
     letters = "ABCDEFGHIJKLMNOPQRSTUVXYZÅÄÖ"
     shifted_numbers = "=!'#¤%&/()"
     numbers = "0123456789"
@@ -200,9 +222,15 @@ def decrypt_pass(acc:Accounts):
 def has_numbers_new(new_pass):
     return any(char.isdigit() for char in new_pass)
 
-# Function that changes password on logged in accountt
 def change_pass(acc:Accounts):
+    """Used in login function, takes in old pass and new pass, changes password to specific account to new pass.
 
+    Args:
+        acc (Accounts): Username, password
+
+    Returns:
+        str: password
+    """
     quantity = 1
 
     choice = input("\nInput 'passwd' to change password or 'meny' to return to the menu: ")

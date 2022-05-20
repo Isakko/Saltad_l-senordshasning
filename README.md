@@ -2,7 +2,7 @@
 
 ## Description
 
-My poject is a assignment from KTH (Kungliga Tekniska Högskolan). The task is to create a passwordsystem where you can create diffirent accounts, login to existing accounts and also changing passwords. Everything is stored in .txt files, passwords are encrypted and every action is tracked and written down in a log file.
+My project is an assignment from KTH (Kungliga Tekniska Högskolan). The task is to create a passwordsystem where you can create diffirent accounts, login to existing accounts and also changing passwords. Everything is stored in .txt files, passwords are encrypted and every action is tracked and written down in a log file.
 
 ## Languages
 

@@ -136,7 +136,7 @@ def crypted_pass(acc:Accounts):
     """Takes in password and encrypts it.
 
     Args:
-        acc (Accounts): password
+        acc (Accounts): The account that will have it password crypted. 
 
     Returns:
         str: crypted passwordd
@@ -184,7 +184,7 @@ def decrypt_pass(acc:Accounts):
     """Takes in crypted password and decrypts it.
 
     Args:
-        acc (Accounts): crypted password
+        acc (Accounts): The account that will have it password decrypted
 
     Returns:
         str: decrypted password
@@ -226,7 +226,7 @@ def change_pass(acc:Accounts):
     """Used in login function, takes in old pass and new pass, changes password to specific account to new pass.
 
     Args:
-        acc (Accounts): Username, password
+        acc (Accounts): The account that will have it password change
 
     Returns:
         str: password

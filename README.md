@@ -1,4 +1,4 @@
-# (Saltad Lösenordhasning)
+# Saltad Lösenordhasning
 
 ## Description
 

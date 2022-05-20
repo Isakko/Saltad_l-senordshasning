@@ -1,4 +1,4 @@
-# Tutorial to a Readme (Saltad Lösenordhasning)
+# (Saltad Lösenordhasning)
 
 ## Description
 
@@ -31,8 +31,8 @@ Exempel:
 - [ ] Create password with special signs/letters
 - [ ] Create more unique encrypter
 - [ ] Languages
-    - [ ] Svenska
-    - [x] Engelska
+    - [ ] Swedish
+    - [x] English
 
 ## Changelog
 
